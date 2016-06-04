@@ -4,8 +4,10 @@
 *.gcda
 *.gcno
 Makefile
+Makefile.old
 src/Builder.c
 MYMETA.json
 MYMETA.yml
 blib/
 pm_to_blib
+tmp/
