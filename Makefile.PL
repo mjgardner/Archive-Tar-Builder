@@ -18,6 +18,15 @@ $makefile->write(
     'PREREQ_PM'      => {},
     'BUILD_REQUIRES' => {
         'Test::Simple'    => '0.44',
-        'Test::Exception' => 0
-    }
+        'Test::Exception' => 0,
+    },
+    'TEST_REQUIRES' => {
+        'Test::More'             => 0,
+        'Test::TempDir::Tiny'    => 0,
+        'Archive::Tar'           => 0,
+        'Archive::Tar::Constant' => 0,
+        'File::Temp'             => 0,
+        'IO::All'                => 0,
+        'List::MoreUtils'        => 0,
+    },
 );
