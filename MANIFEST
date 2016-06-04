@@ -39,4 +39,5 @@ src/match_path.h
 src/ppport.h
 t/lib-Archive-Tar-Builder.t
 t/lib-Archive-Tar-Builder-UserCache.t
+t/lib-Archive-Tar-Builder_bigfile.t
 t/lib-Archive-Tar-Builder_long_symlink.t
