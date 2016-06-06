@@ -25,18 +25,9 @@ my $path_separator = '/';
 my @paths = map { join $path_separator => ( $_ x 10 ) x 20 } qw(x y);
 
 subtest 'Archive::Tar' => sub {
-    my $tar  = Archive::Tar->new;
-    my @file = (
-        $tar->add_data( $paths[0], q{}, { type => FILE } ),
-        $tar->add_data(
-            $paths[1],
-            q{},
-            {
-                type     => SYMLINK,
-                linkname => $paths[0],
-            }
-        ),
-    );
+    my @file = ( { type => FILE }, { type => SYMLINK, linkname => $paths[0] } );
+    my $tar = Archive::Tar->new;
+    $tar->add_data( $paths[$_], q{}, $file[$_] ) for 0 .. $#file;
 
     test_tar_list( $tar, @paths );
 };
@@ -44,8 +35,8 @@ subtest 'Archive::Tar' => sub {
 subtest 'Archive::Tar::Builder' => sub {
     my $temp_dir = tempdir($PROGRAM_NAME);
 
-    my   @file = ( io->catfile( $temp_dir, $paths[0] )->assert->touch );
-    push @file =>  io->catfile( $temp_dir, $paths[1] )->link->assert;
+    my @file = ( sub { shift->assert->touch }, sub { shift->link->assert } );
+    $file[$_] = $file[$_]->( io->catfile( $temp_dir, $paths[$_] ) ) for 0 .. $#file;
 
     my $link_target = $file[0]->pathname;
     $link_target =~ s/^$temp_dir\///;
@@ -55,7 +46,7 @@ subtest 'Archive::Tar::Builder' => sub {
         subtest uc $extension_type => sub {
             my $tar_file  = File::Temp->new;
             my $tar_build = Archive::Tar::Builder->new(
-                "${extension_type}extensions" => 1,
+                "${extension_type}_extensions" => 1,
             );
             $tar_build->set_handle($tar_file);
 
@@ -77,7 +68,7 @@ sub test_tar_list {
     my ( $tar, @path ) = @_;
 
     my @tar_list = part { $_->{type} }
-        $tar->list_files( [qw(type prefix name linkname)] );
+    $tar->list_files( [qw(type prefix name linkname)] );
     diag explain grep { defined } @tar_list;
 
     is(
